@@ -1,0 +1,12 @@
+#
+# pip installed req
+#
+
+matplotlib
+numpy
+pandas
+python-dateutil
+scipy
+pyspice
+sympy
+engineering_notation
