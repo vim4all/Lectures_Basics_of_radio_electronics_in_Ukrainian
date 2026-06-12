@@ -10,3 +10,5 @@ scipy
 pyspice
 sympy
 engineering_notation
+schemdraw
+ipywidgets
