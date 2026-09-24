@@ -1,14 +1,14 @@
 #
-# pip installed req
+# Python dependencies (versions pinned to the environment the lectures are tested with)
 #
 
-matplotlib
-numpy
-pandas
-python-dateutil
-scipy
-pyspice
-sympy
-engineering_notation
-schemdraw
-ipywidgets
+matplotlib==3.10.8
+numpy==2.4.4
+pandas==3.0.2
+python-dateutil==2.9.0.post0
+scipy==1.17.1
+PySpice==1.5
+sympy==1.12
+engineering_notation==0.13.3
+schemdraw==0.23
+ipywidgets==8.1.1

@@ -17,3 +17,28 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/vim4all/Lectures_Basics_of_radio_electronics_in_Ukrainian/HEAD)
 
 ---
+
+#### Структура репозиторію
+
+| Файл | Зміст |
+|------|-------|
+| `Основи радіотехніки_1_частина.ipynb` | Кола постійного та змінного струму: закони Кірхгофа, методи розрахунку, символічний метод, резонанс, чотириполюсники, трифазні кола |
+| `Основи радіотехніки_2_частина.ipynb` | Перехідні процеси (класичний та операторний методи), довга лінія, сигнали, ряди та перетворення Фур'є, кореляційний аналіз, модуляція |
+| `tools/check_notebooks.py` | Перевірка посилань змісту та виконання всіх комірок |
+
+#### Локальний запуск
+
+```bash
+sudo apt install ngspice libngspice0-dev   # симулятор для PySpice
+pip install -r requirements.txt jupyterlab
+jupyter lab
+```
+
+Перевірка конспектів перед публікацією (те саме виконується автоматично в GitHub Actions):
+
+```bash
+python tools/check_notebooks.py            # посилання + виконання всіх комірок
+python tools/check_notebooks.py --no-exec  # лише посилання (швидко)
+```
+
+---
