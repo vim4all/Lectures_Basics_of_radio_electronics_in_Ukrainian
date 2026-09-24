@@ -2,16 +2,20 @@
 
 1. Every internal link ``[..](#anchor)`` points to an existing ``<a class="anchor" id="anchor">``
    and no anchor id is used twice.
-2. (unless --no-exec) every notebook executes top to bottom without errors.
+2. (unless --no-exec) every notebook executes top to bottom without errors,
+   including errors swallowed by ipywidgets.interact and shown inside the widget.
 
 Usage:
     python tools/check_notebooks.py            # links + execution
     python tools/check_notebooks.py --no-exec  # links only (fast)
     python tools/check_notebooks.py --inplace  # also save executed outputs into the notebooks
+
+Set CHECK_KERNEL=<kernel name> to execute with a kernel other than python3.
 """
 import argparse
 import glob
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -36,15 +40,30 @@ def execute(path, inplace):
     from nbclient.exceptions import CellExecutionError
 
     nb = nbformat.read(path, as_version=4)
-    client = NotebookClient(nb, timeout=600, kernel_name="python3",
+    client = NotebookClient(nb, timeout=600, kernel_name=os.environ.get("CHECK_KERNEL", "python3"),
                             resources={"metadata": {"path": str(ROOT)}}, store_widget_state=True)
     try:
         client.execute()
     except CellExecutionError as e:
         return [str(e).splitlines()[-1] if str(e) else "cell execution error"]
-    if inplace:
+
+    # interact() catches exceptions and shows them inside the widget, so look there too
+    problems = []
+    state = nb.metadata.get("widgets", {}).get("application/vnd.jupyter.widget-state+json", {}).get("state", {})
+    parent = {ch.replace("IPY_MODEL_", ""): mid for mid, m in state.items()
+              for ch in m.get("state", {}).get("children", [])}
+    for model_id, model in state.items():
+        for out in model.get("state", {}).get("outputs", []):
+            if out.get("output_type") == "error":
+                root = model_id
+                while root in parent:
+                    root = parent[root]
+                cell = next((i for i, c in enumerate(nb.cells) if c.cell_type == "code" and any(
+                    root in str(o) for o in c.get("outputs", []))), "?")
+                problems.append(f"error inside widget output (cell {cell}): {out['ename']}: {out['evalue']}")
+    if inplace and not problems:
         nbformat.write(nb, path)
-    return []
+    return problems
 
 
 def main():
