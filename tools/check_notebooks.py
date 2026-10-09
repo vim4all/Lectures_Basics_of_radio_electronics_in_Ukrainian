@@ -1,7 +1,7 @@
 """Check the lecture notebooks.
 
-1. Every internal link ``[..](#anchor)`` points to an existing ``<a class="anchor" id="anchor">``
-   and no anchor id is used twice.
+1. Every internal link ``[..](#anchor)`` points to an existing ``<a class="anchor" id="anchor">``,
+   no anchor id is used twice, and every link to another topic ``[..](Тема_NN_….ipynb)`` points to an existing file.
 2. (unless --no-exec) every notebook executes top to bottom without errors,
    including errors swallowed by ipywidgets.interact and shown inside the widget.
 
@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-NOTEBOOKS = sorted(glob.glob(str(ROOT / "Основи радіотехніки_*_частина.ipynb")))
+NOTEBOOKS = sorted(glob.glob(str(ROOT / "Тема_*.ipynb")))
 
 
 def check_links(path):
@@ -31,6 +31,8 @@ def check_links(path):
     links = set(re.findall(r"\]\(#([^)]+)\)", text))
     problems = [f"broken link #{l}" for l in sorted(links - set(anchors))]
     problems += [f"duplicate anchor #{a}" for a in sorted({a for a in anchors if anchors.count(a) > 1})]
+    problems += [f"broken link {f}" for f in sorted(set(re.findall(r"\]\(([^)#]+\.ipynb)\)", text)))
+                 if not (ROOT / f).exists()]
     return problems
 
 
