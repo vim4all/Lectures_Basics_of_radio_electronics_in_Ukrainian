@@ -1,4 +1,8 @@
 /.ipynb_checkpoints/Основи радіотехніки-checkpoint.ipynb
 temp
 /.ipynb_checkpoints
-/__pycache__
+__pycache__/
+
+# compiled PDFs are published as GitHub Release assets (tools/regenerate_pdfs.py)
+pdf/
+*.pdf
